@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bastyq</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial Black', sans-serif;
+            background: white;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Start Screen */
+        #startScreen {
+            justify-content: center;
+            background: linear-gradient(180deg, #7EC8E3 0%, #A8D5BA 50%, #F4E87C 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+        }
+
+        .map-blob {
+            position: absolute;
+            background: #6FB86F;
+            border-radius: 50%;
+            border: 3px solid #F4A460;
+        }
+
+        .official-box {
+            background: linear-gradient(135deg, #87CEEB 0%, #6FB8E0 100%);
+            border: 5px solid #2C5F7C;
+            border-radius: 30px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .official-avatar {
+            width: 180px;
+            height: 180px;
+            background: #F4C090;
+            border-radius: 50%;
+            border: 4px solid #2C5F7C;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .official-avatar::before {
+            content: '';
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            background: #F4C090;
+            border-radius: 50%;
+            top: -20px;
+            left: 20px;
+            border: 4px solid #2C5F7C;
+        }
+
+        .official-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+
+        .angry-eyes {
+            position: absolute;
+            top: 50px;
+            left: 35px;
+            display: flex;
+            gap: 35px;
+        }
+
+        .angry-eye {
+            width: 30px;
+            height: 20px;
+            background: white;
+            border: 3px solid #000;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .angry-eye::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #000;
+            border-radius: 50%;
+            top: 4px;
+            left: 4px;
+        }
+
+        .angry-eye::after {
+            content: '';
+            position: absolute;
+            width: 35px;
+            height: 3px;
+            background: #000;
+            top: -8px;
+            left: -5px;
+            transform: rotate(-15deg);
+        }
+
+        .angry-eye:last-child::after {
+            transform: rotate(15deg);
+            left: 0;
+        }
+
+        .angry-mouth {
+            position: absolute;
+            top: 100px;
+            left: 60px;
+            width: 60px;
+            height: 25px;
+            border: 3px solid #000;
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            background: #8B4513;
+        }
+
+        .suit {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 80px;
+            background: #2C3E50;
+            border: 3px solid #000;
+            border-radius: 10px 10px 50% 50%;
+            z-index: 1;
+        }
+
+        .suit::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 60px;
+            background: white;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 5px;
+        }
+
+        .title {
+            font-size: 80px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 5px 5px 0 #2C5F7C, -2px -2px 0 #87CEEB;
+            margin-bottom: 30px;
+            z-index: 10;
+            letter-spacing: 5px;
+        }
+
+        .btn {
+            padding: 20px 60px;
+            font-size: 28px;
+            font-weight: 900;
+            background: white;
+            color: #2C5F7C;
+            border: 5px solid #2C5F7C;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #2C5F7C, 0 10px 20px rgba(0,0,0,0.3);
+            transition: all 0.1s;
+            z-index: 10;
+            text-transform: uppercase;
+        }
+
+        .btn:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 #2C5F7C, 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            color: #666;
+            box-shadow: 0 8px 0 #999;
+        }
+
+        /* Select District Screen */
+        #selectScreen {
+            padding-top: 40px;
+            background: linear-gradient(180deg, #7EC8E3 0%, #A8D5BA 100%);
+        }
+
+        .instruction {
+            font-size: 24px;
+            font-weight: 900;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 0 #2C5F7C;
+        }
+
+        .kz-map {
+            display: grid;
+            grid-template-columns: repeat(8, 50px);
+            grid-template-rows: repeat(6, 50px);
+            gap: 3px;
+            margin: 30px auto;
+            padding: 0;
+        }
+
+        .district {
+            width: 50px;
+            height: 50px;
+            background: #6FB86F;
+            border: 3px solid #4A7C4A;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 4px 0 #4A7C4A;
+        }
+
+        .district::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            height: 15px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%);
+            border-radius: 5px 5px 0 0;
+        }
+
+        .district:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 6px 0 #4A7C4A;
+        }
+
+        .district.selected {
+            background: #F4A460;
+            border: 3px solid #D68910;
+            box-shadow: 0 4px 0 #D68910;
+        }
+
+        .district.won-user {
+            background: #5DADE2;
+            border: 3px solid #2980B9;
+            box-shadow: 0 4px 0 #2980B9;
+        }
+
+        .district.won-boss {
+            background: #E74C3C;
+            border: 3px solid #C0392B;
+            box-shadow: 0 4px 0 #C0392B;
+        }
+
+        .district.empty {
+            background: transparent;
+            border: none;
+            pointer-events: none;
+            box-shadow: none;
+        }
+
+        /* Game Screen */
+        #gameScreen {
+            padding-top: 20px;
+            background: linear-gradient(180deg, #7EC8E3 0%, #A8D5BA 100%);
+        }
+
+        .score-banner {
+            background: linear-gradient(135deg, #4A7C4A 0%, #6FB86F 100%);
+            border: 5px solid #2C5F7C;
+            border-radius: 25px;
+            padding: 15px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 0 #2C5F7C, 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .score-title {
+            font-size: 18px;
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 900;
+        }
+
+        .score {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .score-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: white;
+            margin-bottom: 5px;
+            font-weight: 900;
+        }
+
+        .score-value {
+            font-size: 36px;
+            color: #2C5F7C;
+            background: white;
+            padding: 10px 25px;
+            border-radius: 15px;
+            border: 4px solid #2C5F7C;
+            min-width: 80px;
+            text-align: center;
+            font-weight: 900;
+            box-shadow: 0 4px 0 #2C5F7C;
+        }
+
+        .vs {
+            font-size: 24px;
+            color: white;
+            font-weight: 900;
+        }
+
+        .district-map {
+            display: grid;
+            gap: 3px;
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 90vw;
+            justify-content: center;
+        }
+
+        .pixel {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #8FBC8F 0%, #6FB86F 100%);
+            border: 3px solid #4A7C4A;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 8px;
+            box-shadow: 0 4px 0 #4A7C4A, inset 0 -2px 5px rgba(0,0,0,0.2);
+        }
+
+        .pixel::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            height: 15px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, transparent 100%);
+            border-radius: 5px 5px 0 0;
+        }
+
+        .pixel::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #5A9A5A;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: -10px -5px 0 #5A9A5A, 8px -3px 0 #5A9A5A, -5px 7px 0 #5A9A5A;
+        }
+
+        .pixel.city::after {
+            content: '🏛️';
+            font-size: 20px;
+            width: auto;
+            height: auto;
+            background: none;
+            box-shadow: none;
+            transform: translate(-50%, -50%);
+        }
+
+        .pixel:hover:not(.claimed-user):not(.claimed-boss) {
+            transform: scale(1.15) translateY(-3px);
+            box-shadow: 0 6px 0 #4A7C4A, inset 0 -2px 5px rgba(0,0,0,0.2);
+        }
+
+        .pixel.selecting {
+            background: linear-gradient(135deg, #F4A460 0%, #F39C12 100%) !important;
+            border: 3px solid #D68910;
+            box-shadow: 0 4px 0 #D68910, 0 0 15px #F39C12;
+            animation: pulse 0.5s infinite;
+        }
+
+        .pixel.claimed-user {
+            background: linear-gradient(135deg, #5DADE2 0%, #3498DB 100%);
+            border: 3px solid #2980B9;
+            box-shadow: 0 4px 0 #2980B9, inset 0 -2px 5px rgba(0,0,0,0.2);
+            cursor: not-allowed;
+        }
+
+        .pixel.claimed-boss {
+            background: linear-gradient(135deg, #EC7063 0%, #E74C3C 100%);
+            border: 3px solid #C0392B;
+            box-shadow: 0 4px 0 #C0392B, inset 0 -2px 5px rgba(0,0,0,0.2);
+            cursor: not-allowed;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1.15) translateY(-3px); }
+            50% { transform: scale(1.25) translateY(-5px); }
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .dice-result {
+            font-size: 48px;
+            font-weight: 900;
+            color: #2C5F7C;
+            background: white;
+            padding: 20px 30px;
+            border: 5px solid #2C5F7C;
+            border-radius: 20px;
+            box-shadow: 0 6px 0 #2C5F7C;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .dice-result::before {
+            content: '🎲 ';
+        }
+
+        .message {
+            font-size: 22px;
+            font-weight: 900;
+            color: white;
+            text-align: center;
+            margin: 10px 0;
+            text-shadow: 3px 3px 0 #2C5F7C;
+        }
+
+        .selection-counter {
+            font-size: 28px;
+            font-weight: 900;
+            color: #2C5F7C;
+            background: white;
+            padding: 15px 30px;
+            border: 4px solid #2C5F7C;
+            border-radius: 15px;
+            margin-top: 15px;
+            box-shadow: 0 4px 0 #2C5F7C;
+        }
+
+        /* End Screen */
+        #endScreen {
+            background: linear-gradient(180deg, #7EC8E3 0%, #A8D5BA 100%);
+        }
+
+        .result {
+            font-size: 56px;
+            font-weight: 900;
+            margin: 30px 0;
+            text-shadow: 4px 4px 0 #2C5F7C;
+        }
+
+        .result.win {
+            color: #27AE60;
+        }
+
+        .result.lose {
+            color: #E74C3C;
+        }
+
+        .final-score {
+            font-size: 32px;
+            margin: 20px 0;
+            color: white;
+            font-weight: 900;
+            text-shadow: 3px 3px 0 #2C5F7C;
+        }
+    </style>
+</head>
+<body>
+    <!-- Start Screen -->
+    <div id="startScreen" class="screen active">
+        <div class="map-pattern" id="mapPattern"></div>
+        <div class="title">Bastyq</div>
+        <div class="official-box">
+            <div class="official-avatar">
+                <div class="suit"></div>
+                <div class="official-face">
+                    <div class="angry-eyes">
+                        <div class="angry-eye"></div>
+                        <div class="angry-eye"></div>
+                    </div>
+                    <div class="angry-mouth"></div>
+                </div>
+            </div>
+        </div>
+        <button class="btn" onclick="startGame()">START</button>
+    </div>
+
+    <!-- Select District Screen -->
+    <div id="selectScreen" class="screen">
+        <div class="instruction">Please select the district from the map</div>
+        <div class="kz-map" id="kzMap"></div>
+        <button class="btn" id="continueBtn" onclick="startRound()" disabled>CONTINUE</button>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="screen">
+        <div class="score-banner">
+            <div class="score">
+                <div class="score-item">
+                    <div class="score-label">USER</div>
+                    <div class="score-value" id="userScore">0</div>
+                </div>
+                <div class="vs">VS</div>
+                <div class="score-item">
+                    <div class="score-label">COMPUTER</div>
+                    <div class="score-value" id="bossScore">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="message" id="gameMessage">Your turn!</div>
+        <div id="diceContainer" style="display: none;">
+            <div class="dice-result" id="diceResult">?</div>
+        </div>
+        <div class="district-map" id="districtMap"></div>
+        <div class="controls">
+            <button class="btn" id="moveBtn" onclick="makeMove()">ROLL DICE</button>
+            <button class="btn" id="claimBtn" onclick="claimAuthority()" disabled>CLAIM</button>
+            <div class="selection-counter" id="selectionCounter" style="display: none;">
+                Selected: <span id="selectedCount">0</span> / <span id="requiredCount">0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- End Screen -->
+    <div id="endScreen" class="screen">
+        <div class="result" id="resultText"></div>
+        <div class="final-score" id="finalScore"></div>
+        <button class="btn" onclick="backToMap()">CONTINUE</button>
+    </div>
+
+    <script>
+        let selectedDistrict = null;
+        let districtResults = {};
+        let currentMap = [];
+        let userClaimed = 0;
+        let bossClaimed = 0;
+        let currentDice = 0;
+        let selectedPixels = [];
+        let isUserTurn = true;
+        let totalPixels = 0;
+
+        // Create animated background blobs
+        function createMapPattern() {
+            const pattern = document.getElementById('mapPattern');
+            for (let i = 0; i < 15; i++) {
+                const blob = document.createElement('div');
+                blob.className = 'map-blob';
+                blob.style.width = (50 + Math.random() * 100) + 'px';
+                blob.style.height = (50 + Math.random() * 100) + 'px';
+                blob.style.left = Math.random() * 100 + '%';
+                blob.style.top = Math.random() * 100 + '%';
+                pattern.appendChild(blob);
+            }
+        }
+        createMapPattern();
+
+        const kazakhstanMap = [
+            [1,1,1,1,1,1,0,0],
+            [1,1,1,1,1,1,1,0],
+            [1,1,1,1,1,1,1,1],
+            [1,1,1,1,1,1,1,1],
+            [0,1,1,1,1,1,1,0],
+            [0,0,1,1,1,1,0,0]
+        ];
+
+        function startGame() {
+            showScreen('selectScreen');
+            createKazakhstanMap();
+        }
+
+        function createKazakhstanMap() {
+            const map = document.getElementById('kzMap');
+            map.innerHTML = '';
+            
+            kazakhstanMap.forEach((row, r) => {
+                row.forEach((cell, c) => {
+                    const district = document.createElement('div');
+                    const id = r * 8 + c;
+                    district.className = cell === 0 ? 'district empty' : 'district';
+                    
+                    if (cell === 1) {
+                        district.dataset.id = id;
+                        
+                        if (districtResults[id] === 'user') {
+                            district.classList.add('won-user');
+                        } else if (districtResults[id] === 'boss') {
+                            district.classList.add('won-boss');
+                        }
+                        
+                        district.onclick = () => selectDistrict(id, district);
+                    }
+                    
+                    map.appendChild(district);
+                });
+            });
+        }
+
+        function selectDistrict(id, element) {
+            if (districtResults[id]) return;
+            
+            document.querySelectorAll('.district.selected').forEach(d => {
+                d.classList.remove('selected');
+            });
+            
+            selectedDistrict = id;
+            element.classList.add('selected');
+            document.getElementById('continueBtn').disabled = false;
+        }
+
+        function startRound() {
+            showScreen('gameScreen');
+            generateDistrictMap();
+            resetGame();
+        }
+
+        function generateDistrictMap() {
+            const container = document.getElementById('districtMap');
+            container.innerHTML = '';
+            
+            currentMap = [];
+            totalPixels = 0;
+            
+            // Generate random organic shape in a grid
+            const gridSize = 10;
+            container.style.gridTemplateColumns = `repeat(${gridSize}, 45px)`;
+            
+            // Create center point
+            const centerR = Math.floor(gridSize / 2);
+            const centerC = Math.floor(gridSize / 2);
+            
+            // Generate organic shape using random walk
+            const pixels = new Set();
+            pixels.add(`${centerR},${centerC}`);
+            
+            // Grow the shape
+            const targetSize = 35 + Math.floor(Math.random() * 20);
+            while (pixels.size < targetSize) {
+                const pixelArray = Array.from(pixels);
+                const randomPixel = pixelArray[Math.floor(Math.random() * pixelArray.length)];
+                const [r, c] = randomPixel.split(',').map(Number);
+                
+                // Add adjacent pixel
+                const directions = [[-1,0], [1,0], [0,-1], [0,1]];
+                const dir = directions[Math.floor(Math.random() * directions.length)];
+                const newR = r + dir[0];
+                const newC = c + dir[1];
+                
+                if (newR >= 0 && newR < gridSize && newC >= 0 && newC < gridSize) {
+                    pixels.add(`${newR},${newC}`);
+                }
+            }
+            
+            // Create grid
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    if (pixels.has(`${r},${c}`)) {
+                        const pixel = document.createElement('div');
+                        pixel.className = 'pixel';
+                        
+                        // 10% chance of city
+                        if (Math.random() < 0.1) {
+                            pixel.classList.add('city');
+                        }
+                        
+                        pixel.dataset.row = r;
+                        pixel.dataset.col = c;
+                        pixel.onclick = () => selectPixel(pixel);
+                        container.appendChild(pixel);
+                        
+                        currentMap.push({ element: pixel, owner: null, r, c });
+                        totalPixels++;
+                    } else {
+                        // Empty space
+                        const empty = document.createElement('div');
+                        empty.style.width = '45px';
+                        empty.style.height = '45px';
+                        container.appendChild(empty);
+                    }
+                }
+            }
+        }
+
+        function resetGame() {
+            userClaimed = 0;
+            bossClaimed = 0;
+            updateScore();
+            isUserTurn = true;
+            document.getElementById('gameMessage').textContent = 'Your turn!';
+            document.getElementById('moveBtn').disabled = false;
+            document.getElementById('claimBtn').disabled = true;
+            document.getElementById('diceContainer').style.display = 'none';
+        }
+
+        function makeMove() {
+            const availablePixels = currentMap.filter(p => !p.owner).length;
+            currentDice = Math.floor(Math.random() * 6) + 1;
+            
+            // If fewer pixels left than dice roll, adjust
+            const pixelsToSelect = Math.min(currentDice, availablePixels);
+            
+            document.getElementById('diceResult').textContent = currentDice;
+            document.getElementById('diceContainer').style.display = 'block';
+            document.getElementById('gameMessage').textContent = `Select ${pixelsToSelect} pixel${pixelsToSelect !== 1 ? 's' : ''}!`;
+            document.getElementById('moveBtn').disabled = true;
+            document.getElementById('selectionCounter').style.display = 'block';
+            document.getElementById('requiredCount').textContent = pixelsToSelect;
+            document.getElementById('selectedCount').textContent = '0';
+            selectedPixels = [];
+            
+            // Store the actual number to select
+            currentDice = pixelsToSelect;
+        }
+
+        function selectPixel(element) {
+            if (!isUserTurn || currentDice === 0) return;
+            
+            const pixel = currentMap.find(p => p.element === element);
+            if (!pixel || pixel.owner) return;
+            
+            const index = selectedPixels.findIndex(p => p.element === element);
+            
+            if (index >= 0) {
+                selectedPixels.splice(index, 1);
+                element.classList.remove('selecting');
+            } else if (selectedPixels.length < currentDice) {
+                selectedPixels.push(pixel);
+                element.classList.add('selecting');
+            }
+            
+            document.getElementById('selectedCount').textContent = selectedPixels.length;
+            document.getElementById('claimBtn').disabled = selectedPixels.length !== currentDice;
+        }
+
+        function claimAuthority() {
+            selectedPixels.forEach(p => {
+                p.owner = 'user';
+                p.element.classList.remove('selecting');
+                p.element.classList.add('claimed-user');
+                userClaimed++;
+            });
+            
+            updateScore();
+            selectedPixels = [];
+            currentDice = 0;
+            document.getElementById('claimBtn').disabled = true;
+            document.getElementById('selectionCounter').style.display = 'none';
+            
+            if (checkGameEnd()) return;
+            
+            isUserTurn = false;
+            document.getElementById('gameMessage').textContent = "Computer's turn...";
+            setTimeout(bossTurn, 1000);
+        }
+
+        function bossTurn() {
+            const available = currentMap.filter(p => !p.owner);
+            const dice = Math.floor(Math.random() * 6) + 1;
+            const pixelsToSelect = Math.min(dice, available.length);
+            
+            document.getElementById('diceResult').textContent = dice;
+            document.getElementById('gameMessage').textContent = `Computer rolled ${dice}!`;
+            
+            setTimeout(() => {
+                const bossPixels = [];
+                
+                for (let i = 0; i < pixelsToSelect; i++) {
+                    if (available.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * available.length);
+                        const pixel = available[randomIndex];
+                        bossPixels.push(pixel);
+                        available.splice(randomIndex, 1);
+                    }
+                }
+                
+                bossPixels.forEach((p, i) => {
+                    setTimeout(() => {
+                        p.owner = 'boss';
+                        p.element.classList.add('claimed-boss');
+                        bossClaimed++;
+                        updateScore();
+                    }, i * 200);
+                });
+                
+                setTimeout(() => {
+                    if (!checkGameEnd()) {
+                        isUserTurn = true;
+                        document.getElementById('gameMessage').textContent = 'Your turn!';
+                        document.getElementById('moveBtn').disabled = false;
+                        document.getElementById('diceContainer').style.display = 'none';
+                    }
+                }, bossPixels.length * 200 + 500);
+            }, 1000);
+        }
+
+        function updateScore() {
+            document.getElementById('userScore').textContent = userClaimed;
+            document.getElementById('bossScore').textContent = bossClaimed;
+        }
+
+        function checkGameEnd() {
+            if (userClaimed + bossClaimed >= totalPixels) {
+                setTimeout(() => {
+                    const won = userClaimed > bossClaimed;
+                    districtResults[selectedDistrict] = won ? 'user' : 'boss';
+                    
+                    document.getElementById('resultText').textContent = won ? 'YOU WIN! 🎉' : 'BOSS WINS! 😤';
+                    document.getElementById('resultText').className = won ? 'result win' : 'result lose';
+                    document.getElementById('finalScore').textContent = `Final Score: ${userClaimed} - ${bossClaimed}`;
+                    
+                    showScreen('endScreen');
+                }, 500);
+                return true;
+            }
+            return false;
+        }
+
+        function backToMap() {
+            showScreen('selectScreen');
+            createKazakhstanMap();
+            document.getElementById('continueBtn').disabled = true;
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
