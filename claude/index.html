@@ -18,6 +18,8 @@
             touch-action: manipulation;
         }
 
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
         .screen {
             display: none;
             min-height: 100vh;
@@ -214,85 +216,178 @@
 
         /* Select District Screen */
         #selectScreen {
-            padding-top: 40px;
+            padding-top: 20px;
             background: linear-gradient(180deg, #7EC8E3 0%, #A8D5BA 100%);
+            overflow-y: auto;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .game-title {
+            font-family: 'Fredoka One', cursive;
+            font-size: 82px;
+            font-weight: 400;
+            color: #FF6B35;
+            text-shadow: 6px 6px 0 #FFB84D, 8px 8px 0 #2C5F7C, -3px -3px 0 #FFF;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            display: inline-block;
+            background: linear-gradient(180deg, #FF6B35 0%, #FF8C42 50%, #FFA552 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(6px 6px 0 #FFB84D) drop-shadow(8px 8px 0 #2C5F7C);
+        }
+
+        .game-subtitle {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2C5F7C;
+            background: white;
+            padding: 12px 25px;
+            border: 4px solid #2C5F7C;
+            border-radius: 15px;
+            display: inline-block;
+            box-shadow: 0 4px 0 #2C5F7C;
+            max-width: 90%;
+            margin: 0 auto;
         }
 
         .instruction {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 900;
             color: white;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            margin-top: 20px;
             text-shadow: 3px 3px 0 #2C5F7C;
         }
 
-        .kz-map {
-            display: grid;
-            grid-template-columns: repeat(8, 50px);
-            grid-template-rows: repeat(6, 50px);
-            gap: 3px;
-            margin: 30px auto;
-            padding: 0;
+        .regions-list {
+            max-width: 500px;
+            width: 90%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-bottom: 30px;
         }
 
-        .district {
-            width: 50px;
-            height: 50px;
-            background: #6FB86F;
-            border: 3px solid #4A7C4A;
+        .region-item {
+            background: linear-gradient(135deg, #6FB86F 0%, #8FBC8F 100%);
+            border: 4px solid #4A7C4A;
+            border-radius: 15px;
+            padding: 18px 25px;
+            font-size: 20px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 2px 2px 0 #2C5F7C;
             cursor: pointer;
             transition: all 0.2s;
-            border-radius: 8px;
+            box-shadow: 0 5px 0 #4A7C4A, 0 6px 15px rgba(0,0,0,0.2);
             position: relative;
-            box-shadow: 0 4px 0 #4A7C4A;
         }
 
-        .district::before {
+        .region-item:hover:not(.locked):not(.completed) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #4A7C4A, 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .region-item:active:not(.locked):not(.completed) {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #4A7C4A, 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .region-item.locked {
+            background: linear-gradient(135deg, #95A5A6 0%, #BDC3C7 100%);
+            border-color: #7F8C8D;
+            box-shadow: 0 5px 0 #7F8C8D;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .region-item.completed {
+            background: linear-gradient(135deg, #5DADE2 0%, #3498DB 100%);
+            border-color: #2980B9;
+            box-shadow: 0 5px 0 #2980B9;
+        }
+
+        .region-item.lost {
+            background: linear-gradient(135deg, #EC7063 0%, #E74C3C 100%);
+            border-color: #C0392B;
+            box-shadow: 0 5px 0 #C0392B;
+        }
+
+        .region-item::after {
             content: '';
             position: absolute;
-            top: 2px;
-            left: 2px;
-            right: 2px;
-            height: 15px;
-            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%);
-            border-radius: 5px 5px 0 0;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
         }
 
-        .district:hover {
-            transform: scale(1.1) translateY(-2px);
-            box-shadow: 0 6px 0 #4A7C4A;
+        .region-item.locked::after {
+            content: '🔒';
         }
 
-        .district.selected {
-            background: #F4A460;
-            border: 3px solid #D68910;
-            box-shadow: 0 4px 0 #D68910;
+        .region-item.completed::after {
+            content: '✅';
         }
 
-        .district.won-user {
-            background: #5DADE2;
-            border: 3px solid #2980B9;
-            box-shadow: 0 4px 0 #2980B9;
+        .region-item.lost::after {
+            content: '❌';
         }
 
-        .district.won-boss {
-            background: #E74C3C;
-            border: 3px solid #C0392B;
-            box-shadow: 0 4px 0 #C0392B;
-        }
-
-        .district.empty {
-            background: transparent;
-            border: none;
-            pointer-events: none;
-            box-shadow: none;
+        .kz-map {
+            display: none;
         }
 
         /* Game Screen */
         #gameScreen {
             padding-top: 20px;
             background: linear-gradient(180deg, #7EC8E3 0%, #A8D5BA 100%);
+        }
+
+        .game-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            margin-bottom: 15px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .exit-btn {
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: 900;
+            background: white;
+            color: #E74C3C;
+            border: 3px solid #E74C3C;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #C0392B;
+            transition: all 0.1s;
+            text-transform: uppercase;
+        }
+
+        .exit-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #C0392B;
+        }
+
+        .region-name {
+            font-size: 18px;
+            font-weight: 900;
+            color: white;
+            text-shadow: 2px 2px 0 #2C5F7C;
+            text-align: center;
+            flex-grow: 1;
         }
 
         .score-banner {
@@ -512,34 +607,22 @@
     </style>
 </head>
 <body>
-    <!-- Start Screen -->
-    <div id="startScreen" class="screen active">
-        <div class="map-pattern" id="mapPattern"></div>
-        <div class="title">Bastyq</div>
-        <div class="official-box">
-            <div class="official-avatar">
-                <div class="suit"></div>
-                <div class="official-face">
-                    <div class="angry-eyes">
-                        <div class="angry-eye"></div>
-                        <div class="angry-eye"></div>
-                    </div>
-                    <div class="angry-mouth"></div>
-                </div>
-            </div>
-        </div>
-        <button class="btn" onclick="startGame()">START</button>
-    </div>
-
     <!-- Select District Screen -->
-    <div id="selectScreen" class="screen">
-        <div class="instruction">Please select the district from the map</div>
-        <div class="kz-map" id="kzMap"></div>
-        <button class="btn" id="continueBtn" onclick="startRound()" disabled>CONTINUE</button>
+    <div id="selectScreen" class="screen active">
+        <div class="game-header">
+            <div class="game-title">Bastyq</div>
+            <div class="game-subtitle">A multiplayer mobile game about ambitious government official in Kazakhstan</div>
+        </div>
+        <div class="instruction">Select Region</div>
+        <div class="regions-list" id="regionsList"></div>
     </div>
 
     <!-- Game Screen -->
     <div id="gameScreen" class="screen">
+        <div class="game-top-bar">
+            <button class="exit-btn" onclick="exitToMenu()">← EXIT</button>
+            <div class="region-name" id="regionName"></div>
+        </div>
         <div class="score-banner">
             <div class="score">
                 <div class="score-item">
@@ -548,7 +631,7 @@
                 </div>
                 <div class="vs">VS</div>
                 <div class="score-item">
-                    <div class="score-label">COMPUTER</div>
+                    <div class="score-label" id="opponentLabel">A.I. ZHOLDASBEKOV</div>
                     <div class="score-value" id="bossScore">0</div>
                 </div>
             </div>
@@ -584,79 +667,103 @@
         let selectedPixels = [];
         let isUserTurn = true;
         let totalPixels = 0;
+        let currentRegionIndex = 0;
+        let opponentName = 'A.I. Zholdasbekov';
 
-        // Create animated background blobs
-        function createMapPattern() {
-            const pattern = document.getElementById('mapPattern');
-            for (let i = 0; i < 15; i++) {
-                const blob = document.createElement('div');
-                blob.className = 'map-blob';
-                blob.style.width = (50 + Math.random() * 100) + 'px';
-                blob.style.height = (50 + Math.random() * 100) + 'px';
-                blob.style.left = Math.random() * 100 + '%';
-                blob.style.top = Math.random() * 100 + '%';
-                pattern.appendChild(blob);
-            }
-        }
-        createMapPattern();
-
-        const kazakhstanMap = [
-            [1,1,1,1,1,1,0,0],
-            [1,1,1,1,1,1,1,0],
-            [1,1,1,1,1,1,1,1],
-            [1,1,1,1,1,1,1,1],
-            [0,1,1,1,1,1,1,0],
-            [0,0,1,1,1,1,0,0]
+        const regions = [
+            'Abai Region',
+            'Aqtobe Region',
+            'Atyrau Region',
+            'East Kazakhstan Region',
+            'Jambyl Region',
+            'Jetisu Region',
+            'Karaganda Region',
+            'Kostanay Region',
+            'Kyzylorda Region',
+            'Mangystau Region',
+            'North Kazakhstan Region',
+            'Pavlodar Region',
+            'Turkistan Region',
+            'West Kazakhstan Region',
+            'Ulytau Region',
+            'Aqmola Region',
+            'Almaty Region',
+            'Baikonur',
+            'Shymkent',
+            'Almaty',
+            'Astana'
         ];
 
-        function startGame() {
-            showScreen('selectScreen');
-            createKazakhstanMap();
+        // Load progress from storage
+        let regionStatuses = {};
+        
+        // Create animated background blobs
+        function createMapPattern() {
+            // Not needed anymore
         }
 
-        function createKazakhstanMap() {
-            const map = document.getElementById('kzMap');
-            map.innerHTML = '';
+        // Initialize the game on load
+        createRegionsList();
+
+        function createRegionsList() {
+            const container = document.getElementById('regionsList');
+            container.innerHTML = '';
             
-            kazakhstanMap.forEach((row, r) => {
-                row.forEach((cell, c) => {
-                    const district = document.createElement('div');
-                    const id = r * 8 + c;
-                    district.className = cell === 0 ? 'district empty' : 'district';
-                    
-                    if (cell === 1) {
-                        district.dataset.id = id;
-                        
-                        if (districtResults[id] === 'user') {
-                            district.classList.add('won-user');
-                        } else if (districtResults[id] === 'boss') {
-                            district.classList.add('won-boss');
-                        }
-                        
-                        district.onclick = () => selectDistrict(id, district);
-                    }
-                    
-                    map.appendChild(district);
-                });
+            regions.forEach((region, index) => {
+                const item = document.createElement('div');
+                item.className = 'region-item';
+                item.textContent = region;
+                
+                const status = regionStatuses[index];
+                
+                if (index > currentRegionIndex) {
+                    // Locked
+                    item.classList.add('locked');
+                } else if (status === 'won') {
+                    item.classList.add('completed');
+                } else if (status === 'lost') {
+                    item.classList.add('lost');
+                }
+                
+                if (index <= currentRegionIndex && !status) {
+                    item.onclick = () => selectRegion(index);
+                }
+                
+                container.appendChild(item);
             });
         }
 
-        function selectDistrict(id, element) {
-            if (districtResults[id]) return;
+        function selectRegion(index) {
+            selectedDistrict = index;
             
-            document.querySelectorAll('.district.selected').forEach(d => {
-                d.classList.remove('selected');
-            });
+            // Set opponent name based on region
+            if (index === regions.length - 1) {
+                opponentName = 'Final Super Boss';
+            } else {
+                opponentName = 'A.I. Zholdasbekov';
+            }
             
-            selectedDistrict = id;
-            element.classList.add('selected');
-            document.getElementById('continueBtn').disabled = false;
+            startRound();
         }
 
         function startRound() {
             showScreen('gameScreen');
+            document.getElementById('regionName').textContent = regions[selectedDistrict];
+            document.getElementById('opponentLabel').textContent = opponentName.toUpperCase();
             generateDistrictMap();
             resetGame();
+        }
+
+        function exitToMenu() {
+            showScreen('selectScreen');
+            createRegionsList();
+            // Reset game state
+            currentDice = 0;
+            selectedPixels = [];
+            document.getElementById('moveBtn').disabled = false;
+            document.getElementById('claimBtn').disabled = true;
+            document.getElementById('selectionCounter').style.display = 'none';
+            document.getElementById('diceContainer').style.display = 'none';
         }
 
         function generateDistrictMap() {
@@ -794,7 +901,7 @@
             if (checkGameEnd()) return;
             
             isUserTurn = false;
-            document.getElementById('gameMessage').textContent = "Computer's turn...";
+            document.getElementById('gameMessage').textContent = `${opponentName} makes a turn...`;
             setTimeout(bossTurn, 1000);
         }
 
@@ -804,7 +911,7 @@
             const pixelsToSelect = Math.min(dice, available.length);
             
             document.getElementById('diceResult').textContent = dice;
-            document.getElementById('gameMessage').textContent = `Computer rolled ${dice}!`;
+            document.getElementById('gameMessage').textContent = `${opponentName} rolled ${dice}!`;
             
             setTimeout(() => {
                 const bossPixels = [];
@@ -847,7 +954,17 @@
             if (userClaimed + bossClaimed >= totalPixels) {
                 setTimeout(() => {
                     const won = userClaimed > bossClaimed;
-                    districtResults[selectedDistrict] = won ? 'user' : 'boss';
+                    
+                    // Update region status
+                    if (won) {
+                        regionStatuses[selectedDistrict] = 'won';
+                        // Unlock next region
+                        if (selectedDistrict === currentRegionIndex && currentRegionIndex < regions.length - 1) {
+                            currentRegionIndex++;
+                        }
+                    } else {
+                        regionStatuses[selectedDistrict] = 'lost';
+                    }
                     
                     document.getElementById('resultText').textContent = won ? 'YOU WIN! 🎉' : 'BOSS WINS! 😤';
                     document.getElementById('resultText').className = won ? 'result win' : 'result lose';
@@ -862,8 +979,7 @@
 
         function backToMap() {
             showScreen('selectScreen');
-            createKazakhstanMap();
-            document.getElementById('continueBtn').disabled = true;
+            createRegionsList();
         }
 
         function showScreen(screenId) {
